@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Currerncy Converter</title>
+  <style type="text/css">
+    body {
+      font: 100%/1.4 Verdana, Arial, Helvetica, sans-serif;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      color: #000;
+      background-color: #fff;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .formSection {
+      text-align: center;
+    }
+
+    li {
+      text-decoration-style: none;
+    }
+
+    #submit {
+      background: blue;
+      color: white;
+      height: 2em;
+      width: 6em;
+    }
+
+    #msg {
+      border-style: outset;
+      border-width: 5px;
+      
+    }
+  </style>
+
+
+</head>
+
+<body>
+  <div class="header">
+
+    <h1>WELCOME!</h1><br>
+
+    <h2>Currency Converter</h2><br><br>
+  </div>
+
+  <form class="formSection">
+
+    <select name="" id="sourceCurrency">
+      <option value="" selected>Source Currency</option>
+    </select> 
+    <input name="sourceCurrencyAmount" id="sourceCurrencyAmount" type="number" placeholder="Enter the value" required>
+
+    <select name="destinationCurrency" id="destinationCurrency">
+      <option value="" selected>Destination Currency</option>
+    </select><br><br>
+      
+    <input id="submit" type="submit" value="Calculate"><br>
+    <p id="msg"></p>
+  </form>
+
+  <script type="text/javascript">
+   document.getElementsByTagName("h2")[0].style.paddingTop="3em"
+  document.getElementsByTagName("h1")[0].style.background="blue"
+  document.getElementsByTagName("h1")[0].style.color="white";
+  document.getElementsByTagName("h2")[0].style.color="blue";
+  document.getElementById("msg").style.color="blue"
+  document.getElementById("msg").style.fontWeight="bold"
+
+
+    function createNode(element) {
+      return document.createElement(element);
+    }
+
+    function append(parent, el) {
+      return parent.appendChild(el);
+    }
+    fetch("https://currency-converter5.p.rapidapi.com/currency/list?format=json", {
+        "method": "GET",
+        "headers": {
+          "x-rapidapi-host": "currency-converter5.p.rapidapi.com",
+          "x-rapidapi-key": "a52ac09f88msh86e0f7c158fee09p1d1f93jsn89f1eaefa3e8"
+        }
+      })
+      .then((resp) => resp.json())
+      .then(function (data) {
+
+        var obj = data.currencies
+        newKey = Object.keys(obj)
+        newVal = Object.values(obj)
+        let dropdown = document.getElementById("sourceCurrency");
+        let dropdown2 = document.getElementById("destinationCurrency");
+        for (let i = 0; i < newKey.length; i++) {
+          let option = document.createElement('option');
+          let option2 = document.createElement('option');
+          option.textContent = `${newVal[i]}`
+          option2.textContent = `${newVal[i]}`
+          option.value = `${newKey[i]}`
+          option2.value = `${newKey[i]}`
+          console.log('i rn')
+          append(dropdown, option);
+          append(dropdown2, option2);
+
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+
+
+    //Cryptocurrency-Fiat converter
+   
+    function calculate(e) {
+
+      let sourceCurrency = document.getElementById("sourceCurrency").value;
+      let destinationCurrency = document.getElementById('destinationCurrency').value;
+      let sourceCurrencyAmount = document.getElementById('sourceCurrencyAmount').value;
+      let result;
+      if (!sourceCurrency || sourceCurrency===""|| destinationCurrency===""){
+        if(!sourceCurrencyAmount){
+
+          console.log("Enter valid amount")
+        }
+        if(sourceCurrency===""){
+
+          console.log("select your currency")
+        }if( destinationCurrency===""){
+
+          console.log("select a source Currency")
+        }
+
+      }else{
+      fetch(`https://currency-converter5.p.rapidapi.com/currency/convert?format=json&from=${sourceCurrency}&to=${destinationCurrency}&amount=${sourceCurrencyAmount}`,
+      {
+      "method": "GET",
+      "headers": {
+      "x-rapidapi-host": "currency-converter5.p.rapidapi.com",
+      "x-rapidapi-key": "a52ac09f88msh86e0f7c158fee09p1d1f93jsn89f1eaefa3e8"
+      }
+      })
+      .then((resp) => resp.json())
+      .then(data=>{
+        var obj = data.rates
+        let newVal = Object.values(obj)
+        return result = newVal[0].rate_for_amount
+
+      }). then(result=>{
+        let submit = document.getElementById('submit');
+        let msg = document.getElementById('msg');
+        msg.textContent = `Your ${sourceCurrencyAmount } ${sourceCurrency} is equivalent to ${result} ${destinationCurrency}.Thank you.`;
+      })
+
+      .catch(err=>{
+        console.log(err)
+      })
+   
+      }
+      
+      
+      e.preventDefault();
+    }
+    submit.addEventListener('click', calculate);
+
+
+    function myFunction() {
+      document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function filterFunction() {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      dropdown = document.getElementById("myDropdown");
+      a = dropdown.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+        txtValue = a[i].textContent || a[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          a[i].style.display = "";
+        } else {
+          a[i].style.display = "none";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
